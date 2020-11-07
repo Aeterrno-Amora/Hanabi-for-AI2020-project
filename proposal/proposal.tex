@@ -1,16 +1,17 @@
-\documentclass[12pt]{article}
+\documentclass[11pt]{article}
 \usepackage{ulem}
+\usepackage{apacite}
 \usepackage{amsmath}
 \usepackage{amssymb}
-\usepackage{geometry}
 \usepackage{graphicx}
 \usepackage{enumerate}
 \usepackage{algorithm}
 \usepackage{algorithmicx}
 \usepackage{algpseudocode}
 \usepackage[rgb]{xcolor}
+\usepackage[numbers]{natbib}
+\usepackage[a4paper,margin=2cm]{geometry}
 \usepackage[colorlinks=true, urlcolor=blue, linkcolor=blue, citecolor=blue]{hyperref}
-\geometry{a4paper,left=2cm,right=2cm,top=2cm,bottom=2cm}
 
 \newtheorem{lemma}{Lemma}[section]
 \newtheorem{theorem}{Theorem}[section]
@@ -18,65 +19,86 @@
 \newtheorem{definition}{Definition}[section]
 
 \begin{document}
-\title{\textbf{Project Proposal: Hanabi}}
+\title{\bf Project Proposal: Hanabi}
 \author{Xiuhan Wang, Jing Wei}
 \date{\today}
 \maketitle
 
 \section{Problem Definition}
-\textsl{Hanabi} is a game for two to five players. There are $50$ cards in the deck. Each card has a rank (from $1$ to $5$) and a color (red, green, blue, yellow and white). For each color, there are three $1$'s, two $2$'s, two $3$'s, two $4$'s and one $5$. Each player holds four cards in their hands if there are at least four players or five cards otherwise. Each player can see all others' cards but can't see the cards of himself. The players are fully cooperative: they want to build five stacks, one for each color, beginning with a $1$ and ending with a $5$. The goal is to maximize the score.
 
-The players take turns to play. In one's turn, he must take exactly one of the following actions:
+\textsl{Hanabi} is a game for two to five players. Each player holds four cards in his hand (or five if less than four players). Everyone can see all others' cards but not that of himself. Each card has a rank (1--5) and a color (red, green, blue, yellow or white). There are three 1s, two 2s, 3s, 4s and a 5 of each color; hence 50 cards in total. The players are fully cooperative---they want to play cards to build five stacks, one for each color, going consecutively from 1. The goal is to maximize the score, which is the total number of cards in the stack.
+
+Players take turns to play. In one's turn, he must take exactly one of the following actions:
 
 \begin{itemize}
-\vspace{-1ex}
-\item \textbf{Hint.} The player can give a hint to another player. The hint consists of choosing a color or rank, and telling the other player ``these cards are all the cards of that color (or number) in your hand''. Only ranks and colors that are present in the other player's hand can be chosen. To limit the number of hints, each player has initially eight information tokens and a token is consumed when giving a hint.
-\vspace{-1ex}
-\item \textbf{Discard.} When the player has less than eight information tokens, he can discard a card from his hand, draw a new card from the deck and recover an information token. The discarded card is visible to all players and the newly drawn card is visible only to all other players.
-\vspace{-1ex}
-\item \textbf{Play.} The player can choose one card from his hand and try to put it on the stacks. The operation is successful if the rank is exactly one larger than the top of the stack corresponding to the color. If it is successful, put the card on the top of the corresponding stack. The player recovers one information token if the rank of the card is $5$ and he has less than eight tokens. If the operation is unsuccessful, discard the card and the group loses one life. There are three lives initially. If all three lives are lost, the game immediately ends. Finally, the player draws a new card from the deck.
+\item \vspace{-1.2ex} \textbf{Hint.} To give a hint to others, the player chooses a color or a rank, then point out all cards matching that color or rank in another player's hand. Only ranks and colors that are present in the other player's hand can be chosen. To limit the number of hints, the group has initially eight information tokens and a token is consumed when giving a hint.
+\item \vspace{-1.5ex} \textbf{Discard.} When there are less than eight information tokens, he can discard a card from his hand, draw a new card from the deck and recover an information token. The discarded card is visible to all players and the newly drawn card is visible only to all other players.
+\item \vspace{-1.5ex} \textbf{Play.} The player can choose a card from his hand and try to put it in the stacks. It's successful if the rank is exactly one larger than the top of the stack corresponding to the color. If it's successful, put the card on the top of that stack. Recover one information token if there are less than eight and the rank played is 5. If the play is unsuccessful, discard the card and the group loses one life. When three lives are lost, the game ends immediately. Wether successful or not, the player draws a new card from the deck.
+\vspace{-1.5ex}
 \end{itemize}
 
-The game ends in one of three ways: when the players have completed the stacks, when all three lives are lost, or when the last card in the deck is drawn and every player has taken one final turn. If all three lives are lost, the score is $0$, otherwise the score is the number of cards in the stack, which is at most $25$.
+The game ends in one of three ways: when the stacks are completed, when three lives are lost or when the last card in the deck is drawn and every player has taken one final turn. The score is 0 if three lives are lost; otherwise it's the number of cards in the stacks, which is at most 25.
 
 \section{A Survey on Previous Works}
-Why is Hanabi so important? In \cite{BFC+20} it is pointed out that Hanabi is a representative of fully cooperative game with imperfect information. A state-or-the-art technique which performs well on it may be generalizable to some other games. 
 
-There are a line of works on Hanabi. In \cite{BCD+17} Hanabi game is proved to be $\mathsf{NP}$-hard even all hidden information is revealed. In \cite{CSD+15} a human-intelligence hat guessing strategy is applied to the Hanabi game and almost achieves the best performance for the five-player setting. By best performance, we mean a cheating strategy where each player sees his own cards and use the information strategy (details described in the paper). However, this performs performs badly when there are only two players as experimented in \cite{Bou17} and it is not generalizable to similar games. In \cite{WWB+17} a Monte-Carlo tree search algorithm is given, but the performance is still not so good.
+Hanabi is a benchmark challenge in fully cooperative games of imperfect information; it's very different from adversarial two-player zero-sum games which have been studied more.\cite{bard2020the} But non-zero-sum scenarios are more important in real life.
 
-We mainly analyze (and try to improve) the methods two recent works: In \cite{FSH+19} a method called Bayesian action decoder is invented. The general idea is to compute a joint public belief over the players' private features and to sample a deterministic partial policy to resolve the dilemma between informative actions and stochastic actions for exploration. This method works well in the two-player setting. In \cite{HLPF20} a method called other-play is invented. The idea is to use known symmetries in the problem and find the other players' strategies over equivalence classes. This method performs much better than the same training method without other-play in cross-play settings.
+The Hanabi game was proved \textsf{NP}-hard even if all hidden information is revealed.\cite{baffier2017hanabi} The hand-coded mathematical ``hat guessing game'' strategy\cite{cox2015how} held state-of-the-art results from March 2016 until December 2019. In five-player games, it almost achieved the best performance resulted by a cheating strategy where each player sees his own cards and uses the information strategy. However, it performed badly in the two-player setting\cite{bouzy2017playing}; and it is not generalizable to similar games. A Monte-Carlo tree search algorithm is given by \cite{walton-rivers2017evaluating}; but the performance is still not very good.
 
-However, the other-play method has some limitations: it relies on symmetries given in the problem. What if we don't know the symmetries? Can we learn the symmetries while learning the policies? Moreover, it seems the results of cross-play settings is not so satisfying. Can we develop better methods to improve the performance?
+Foerster and Song proposed a method of Bayesian action decoder (BAD)\cite{foerster2018bayesian}. The key idea is a joint public belief over players' private features to resolve recursive belief over beliefs, and sampling a deterministic partial policy to resolve the dilemma between informative actions and stochastic actions for exploration. BAD worked well in the two-player setting. Hu and Foerster continued to optimize BAD to SAD\cite{hu2020simplified} and incorperated search into SPARTA\cite{lerer2020improving} to achieve a new state-of-the-art result.
+
+Then they come up with the method called ``other-play'' (OP)\cite{hu2020other} that work well on the zero-shot coordination scenario of the game. Previous studies on MARL usually focus on the self-play (SP) setting where agents are trained and tested both against with themselves, but agents naively trained by SP could do arbitrarily bad when paired with a partner they're not trained with. OP trains the agent with a copy of itself that is randomly permuted according to the symmetries in the game; hence it reduces the tendency towards arbitrary symmetry breaking. Agents trained with OP perform well when tested by cross-play, and also cooperate well with human.
+
+%However, the other-play method has some limitations: it relies on symmetries given in the problem.  Moreover, it seems the results of cross-play settings is not so satisfying. Can we develop better methods to improve the performance?
 
 \section{Our Goals and Ideas}
-Our first goal is to reproduce the results in \cite{FSH+19} and \cite{HLPF20}. Since our computation resources are limited, our results might be a little worse than the results in the paper.
 
-Our second goal is trying to learn some symmetries if we don't know them initially. There are two possible solutions.
-\begin{itemize}
-\vspace{-1ex}
-\item \textbf{Compute approxiamte graph automorphisms.} Symmetries are actually graph automorphisms. During searching we can use some useful hash functions to calculate some approxiamte graph automorphisms and learn the symmetries. It might be useful when the symmetries are unknown.
-\vspace{-1ex}
-\item \textbf{Use symmetric parameters.} TODO.
-\end{itemize}
+First we have to make the open-sourced algorithms and models of SAD with OP\cite{hu2020other} (and SPARTA\cite{lerer2020improving} if necessary) run on our machines. Since our computation resources are limited, our results might be not as good as that in the paper.
 
-Our third goal is to achieve better performance on cross-play settings. TODO.
+Then we can try to make some improvements. We have some ideas as following:
 
-\section*{References}
+\subsection{Automatically Detect Symmetries}
+
+One limitation of OP is that the symmetries in the underlying MDP must be given. What if we don't know the symmetries initially? Can we learn the symmetries while learning the policies?
+
+Symmetries are essentially graph automorphisms. During searching we can apply hashing to calculate some graph automorphisms and learn the symmetries. In addition, embeddings of neighborhood structures calculated by graph convolution may produce a similarity meassure between nodes.
+
+\subsection{Better RL Algorithm for Zero-Shot Coordination}
+
+\subsubsection{Symmetric Network}
+
+What OP essentially does is preventing agents away from policies that become very different when permuted. But we can do more---we can force the model to be invariant under symmetries. We propose a symmetric network where every nueron has its counterparts that share the same weights but take input from the previous layer according to a different permutation.
+
+For the same reason why people design CNN to cope with the translation invariance in pictures, a symmetric NN should work well on this symmetry-invariant problem when we also want a symmetry-invariant answer. We suppose it can meanwhile reduce the number of parameters.
+
+\subsubsection{Incoporate Searching}
+
+The OP paper\cite{hu2020other} didn't try to apply SPARTA-style searching. But we believe there is no difficulty to do it; and it can give a large boost also for cross-play settings, because we have already assumed our agents would learn similar policies.
+
+\subsubsection{Train a Population of Agents}
+
+Symmetries contribute a lot to the incompatibility issue between policies (and therefore the bad cooperation), but those are not all. For example, an OP agent may use rank hints to indicate playing and color hints to indicate discarding, while another agent may indicate the opposite. We think this is mainly because there are multiple local optimal solutions that are almost equally good with regard to OP (though they're unlikely exactly equal because they're not symmetric). Experiments in \cite{hu2020other} shows that most of the OP agents come up with compatible policies; but a few agents cooperate badly and seem like local optimal solutions described above.
+
+Perhaps we can train 2 or 3 agents by self-play and cross-play at the same time. The teammates that go to the more possible optimal points will have a good chance of pulling the bad cooperator out of its bias. The OP paper\cite{hu2020other} tried population based approaches but failed. But we think it worth a trial to add on top of OP. Especially if we totally prevent agents from exploiting symmetries by symmetric network, the team trainning may have some effect in reducing exploitation of non-symmetries.
+
+%\section*{References}
 % APA format
-\begin{enumerate}[\lbrack 1\rbrack]
-\bibitem{BFC+20} Bard, N., Foerster, J. N., Chandar, S., Burch, N., Lanctot, M., Song, H. F., ... \& Dunning, I. (2020). The hanabi challenge: A new frontier for ai research. \textsl{Artificial Intelligence, 280}, 103216.
+%\begin{enumerate}[\lbrack 1\rbrack]
+%\bibitem{BFC+20} Bard, N., Foerster, J. N., Chandar, S., Burch, N., Lanctot, M., Song, H. F., ... \& Dunning, I. (2020). The hanabi challenge: A new frontier for ai research. \textsl{Artificial Intelligence, 280}, 103216.
 
-\bibitem{BCD+17} Baffier, J. F., Chiu, M. K., Diez, Y., Korman, M., Mitsou, V., van Renssen, A., ... \& Uno, Y. (2017). Hanabi is np-hard, even for cheaters who look at their cards. \textsl{Theoretical Computer Science, 675}, 43-55.
+%\bibitem{BCD+17} Baffier, J. F., Chiu, M. K., Diez, Y., Korman, M., Mitsou, V., van Renssen, A., ... \& Uno, Y. (2017). Hanabi is np-hard, even for cheaters who look at their cards. \textsl{Theoretical Computer Science, 675}, 43-55.
 
-\bibitem{CSD+15} Cox, C., De Silva, J., Deorsey, P., Kenter, F. H., Retter, T., \& Tobin, J. (2015). How to make the perfect fireworks display: Two strategies for hanabi. \textsl{Mathematics Magazine, 88}(5), 323-336.
+%\bibitem{CSD+15} Cox, C., De Silva, J., Deorsey, P., Kenter, F. H., Retter, T., \& Tobin, J. (2015). How to make the perfect fireworks display: Two strategies for hanabi. \textsl{Mathematics Magazine, 88}(5), 323-336.
 
-\bibitem{Bou17} Bouzy, B. (2017, July). Playing hanabi near-optimally. In \textsl{Advances in Computer Games} (pp. 51-62). Springer, Cham.
+%\bibitem{Bou17} Bouzy, B. (2017, July). Playing hanabi near-optimally. In \textsl{Advances in Computer Games} (pp. 51-62). Springer, Cham.
 
-\bibitem{WWB+17} Walton-Rivers, J., Williams, P. R., Bartle, R., Perez-Liebana, D., \& Lucas, S. M. (2017, June). Evaluating and modelling hanabi-playing agents. In \textsl{2017 IEEE Congress on Evolutionary Computation (CEC)} (pp. 1382-1389). IEEE.
+%\bibitem{WWB+17} Walton-Rivers, J., Williams, P. R., Bartle, R., Perez-Liebana, D., \& Lucas, S. M. (2017, June). Evaluating and modelling hanabi-playing agents. In \textsl{2017 IEEE Congress on Evolutionary Computation (CEC)} (pp. 1382-1389). IEEE.
 
-\bibitem{FSH+19} Foerster, J., Song, F., Hughes, E., Burch, N., Dunning, I., Whiteson, S., ... \& Bowling, M. (2019, May). Bayesian action decoder for deep multi-agent reinforcement learning. In \textsl{International Conference on Machine Learning} (pp. 1942-1951).
+%\bibitem{FSH+19} Foerster, J., Song, F., Hughes, E., Burch, N., Dunning, I., Whiteson, S., ... \& Bowling, M. (2019, May). Bayesian action decoder for deep multi-agent reinforcement learning. In \textsl{International Conference on Machine Learning} (pp. 1942-1951).
 
-\bibitem{HLPF20} Hu, H., Lerer, A., Peysakhovich, A., \& Foerster, J. (2020). ``Other-Play'' for Zero-Shot Coordination. \textsl{arXiv preprint arXiv:2003.02979}.
-\end{enumerate}
-
+%\bibitem{HLPF20} Hu, H., Lerer, A., Peysakhovich, A., \& Foerster, J. (2020). ``Other-Play'' for Zero-Shot Coordination. \textsl{arXiv preprint arXiv:2003.02979}.
+%\end{enumerate}
+\normalem
+\bibliographystyle{apacite}
+\bibliography{papers}
 \end{document}
