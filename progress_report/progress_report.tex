@@ -1,0 +1,79 @@
+\documentclass[12pt]{article}
+\usepackage{ulem}
+\usepackage{apacite}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{enumerate}
+\usepackage{algorithm}
+\usepackage{algorithmicx}
+\usepackage{algpseudocode}
+\usepackage[rgb]{xcolor}
+\usepackage[numbers]{natbib}
+%\usepackage[a4paper,margin=2cm]{geometry}
+\usepackage[colorlinks=true, urlcolor=blue, linkcolor=blue, citecolor=blue]{hyperref}
+
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[section]
+\newtheorem{definition}{Definition}[section]
+
+\begin{document}
+\title{\bf Progress report: Hanabi}
+\author{Xiuhan Wang, Jing Wei}
+\date{\today}
+\maketitle
+
+\section{Experimental Results}
+We cloned the github repository \url{https://github.com/facebookresearch/hanabi_SAD} and tried to run it. Since it is our first time to do a project, we wasted a lot of time on dealing with environmental settings. We first tried to run it on our local machines using cpu, but there appears to be a lot of problems, like pytorch versions or github repository versions (some repositories have been updated, but it seems the updated version can hardly be compiled successfully). Fortunately, though having spent a lot of time, we managed to solve them and made it run successfully on our machine.
+
+After making it run successfully on our local machines, we rented some gpus to train it. Because of the limitation of our computation resources, the result don't converge and are worse than we expected. Table \ref{Tab1} is the scores for the models in the first 500 epoches:
+\begin{table}[H]
+\begin{centering}
+\begin{tabular}{|l|l|l|l|}
+\hline
+epoch & mean score & s.e.m. & perfect ratio \\ \hline
+100 & 17.084 & 0.037 & 0.000 \\ \hline
+200 & 17.116 & 0.035 & 0.001 \\ \hline  
+300 & 17.160 & 0.035 & 0.001 \\ \hline
+400 & 17.191 & 0.035 & 0.002 \\ \hline
+500 & 17.245 & 0.033 & 0.003 \\ \hline
+\end{tabular}
+\caption{Performances after every 100 more epoches is trained.}
+\label{Tab1}
+\end{centering}
+\end{table}
+
+The training method is Independent Q-Learning (IQL) and uses Simplified Action Decoder (SAD). The number of players is $2$. We wondered why the performance seems too bad. After reading the original paper more carefully, we found out that only when trained about 1 million epoches can the model converge! However, under our setting, it takes almost one day to train $500$ epoches. Maybe our configuration is not set correctly, or maybe because the authors' computation resources are much more powerful than ours. Anyway, it seems extremely hard to reproduce the results of the paper.
+
+We also evaluated the models trained by the paper authors. We focus on 2-player settings. TTable \ref{Tab2} compares the performances under different training settings:
+\begin{table}[H]
+\begin{centering}
+\begin{tabular}{|l|l|l|l|}
+\hline
+method & mean score & s.e.m. & perfect ratio \\ \hline
+IQL & 23.773 & 0.017 & 0.436 \\ \hline
+VDN & 23.897 & 0.018 & 0.487 \\ \hline
+SAD & 23.980 & 0.018 & 0.531 \\ \hline
+SAD + Aux & 24.015 & 0.018 & 0.544 \\ \hline
+\end{tabular}
+\caption{Comparing performances under different training settings.}
+\label{Tab2}
+\end{centering}
+\end{table}
+
+We can observe that the model trained by SAD + Auxiliary tasks is the best. At the beginning epoches SAD may perform worse than the other settings, but when the model nearly converges, SAD is at a great advantage. So here comes a natural question: how can we evaluate the performance of a method when our computation resources are limited?
+
+\section{Theoretical Ideas}
+
+\section{Further Directions}
+For experimental directions, we are going to train some models under different settings and compare their performances. In order to see the differences explicitly, we may slightly extend the number of epoches to train. If possible, we may modify some of the codes using our theoretical ideas. This might be hard since there's almost no comments in the code, which makes the code hard to understand.
+
+Moreover, we find that our inital goals seem too far away. Therefore, we are going to restrict the problem settings (for example, we shall focus on 2-player settings) and try to find out something more specific.
+
+If the experimental tasks are still too hard, we may change our focus on theoretical ideas. We may read more papers about Hanabi, understand their ideas more clearly, and think about why such settings have better performance than others.
+
+\normalem
+%\bibliographystyle{apacite}
+%\bibliography{papers}
+\end{document}
