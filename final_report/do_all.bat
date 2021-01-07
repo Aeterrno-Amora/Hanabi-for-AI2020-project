@@ -1,0 +1,4 @@
+xelatex final_report
+bibtex final_report
+xelatex final_report
+xelatex final_report
