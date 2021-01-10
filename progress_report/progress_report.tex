@@ -27,7 +27,7 @@
 \section{Experimental Results}
 We cloned the github repository \url{https://github.com/facebookresearch/hanabi_SAD} of the open-sourced code of Hanabi SAD with other-play \citep{hu2020other} and tried to run it. Since it is our first time to do a project, we spent a lot of time on dealing with environmental settings. We first tried to run it on our local machines using cpu, but there appeared to be a lot of problems, including pytorch versions and github repository versions (some repositories have been updated, but it seems the updated version can hardly be compiled successfully). Fortunately, though having spent a lot of time, we managed to solve them and made it run successfully on our machine.
 
-After making it run successfully on our local machines, we rented some GPUs to train it. Because of the limitation of our computation resources, the result don't converge and are worse than we expected. Table \ref{Tab1} is the scores for the models in the first 500 epoches:
+After making it run successfully on our local machines, we rented some GPUs to train it. Because of the limitation of our computation resources, the results haven't converged yet and are worse than we expected. Table \ref{Tab1} is the scores (max 25) for the models in the first 500 epoches:
 \begin{table}[H]
 \begin{centering}
 \begin{tabular}{|l|l|l|l|}
@@ -44,7 +44,9 @@ epoch & mean score & s.e.m. & perfect ratio \\ \hline
 \end{centering}
 \end{table}
 
-The training method is Independent Q-Learning (IQL) and uses Simplified Action Decoder (SAD). The number of players is $2$. We wondered why the performance seems too bad. After reading the original paper more carefully, we found out that only when trained about 1 million epoches can the model converge! However, under our setting, it takes almost one day to train $500$ epoches. Maybe our configuration is not set correctly, or maybe because the authors' computation resources are much more powerful than ours. Anyway, it seems extremely hard to reproduce the results of the paper.
+The trained model is Simplified Action Decoder (SAD) built on Independent Q-Learning (IQL). The number of players is $2$.
+
+Wondering why our performance is so much worse than that in the original paper, we reread the original paper and code more carefully, we found out that only when trained about 1 million epoches can the model converge! However, with our resources, it takes almost one day to train $500$ epoches. Further more, the proposed ``SAD'' model was based on VDN, which converges faster than IQL. All these reasons made the result look bad. And it seems extremely hard to reproduce the results of the paper.
 
 We also evaluated the models trained by the paper authors\citep{hu2020simplified}. We focus on 2-player settings. Table \ref{Tab2} compares the performances under different training settings:
 \begin{table}[H]
@@ -86,7 +88,7 @@ We can observe that the model trained by SAD + Auxiliary tasks is the best. At t
   This way of constructing a network apply to various types of neurons including LSTM cells.
 
 \section{Further Directions}
-For experimental directions, we are going to train some models under different settings and compare their performances. In order to see the differences explicitly, we may slightly extend the number of epoches to train. If possible, we may modify some of the codes using our theoretical ideas. This might be hard since there's almost no comments in the code, which makes the code hard to understand.
+For experimental directions, we plan to train models under some more various settings and compare their performances. In order to see the differences explicitly, we may slightly extend the number of epoches to train when time allows. If possible, we may modify some of the codes using our theoretical ideas. This might be hard since there's almost no comments in the code, which makes the code hard to understand.
 
 Moreover, we find that our inital goals seem too far away. Therefore, we are going to restrict the problem settings (for example, we shall focus on 2-player settings) and try to find out something more specific.
 

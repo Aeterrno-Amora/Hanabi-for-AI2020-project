@@ -79,7 +79,7 @@ Zero-shot coordination is the scenario where players are paired with strangers t
 
 Agents trained by self-play would quickly reach a convention to pick the same lever. This gives the highest payoff 1 and is fine when playing with the same partner they're trained with. We see, in self-play, agents often use coordinated symmetry breaking to get higher payoffs, but this doesn't work and will be disastrous in the zero-shot coordination setting.
 
-Similarly in Hanabi, the 5 colors are symmetric and thus indistinguishable. Self-play bots' strategies often involves conventions like ``hinting yellow means discarding the first card``. This would coordinate badly with another agent whose convention is ``hinting blue means discarding the first card'', which has the same chance of being adopted by self-play as the strategy.
+Similarly in Hanabi, the 5 colors are symmetric and thus indistinguishable. Self-play bots' strategies often involves conventions like ``hinting yellow means discarding the first card``. This would coordinate badly with another agent whose convention is ``hinting blue means discarding the first card'', which has the same chance of being adopted as strategy by self-play.
 
 \section{Other Play}
 \renewcommand\S{{\mathcal S}}
@@ -98,7 +98,7 @@ The symmetries in the MDP can be described as a isomorphism over states $\S$, ob
 
 Clearly, $\Phi$ is a permutation group that acts on $\S,~\A$ and $\O$.
 
-In the lever game, the 9 levers of 1 are indistinguishable; hence there is $S_9$ symmetry. In Hanabi, the 5 colors and the positions of cards in the players' hands are symmetric; the corresponding permutation group is $S_{\text{num-colors}}\times (S_{\text{hand-size}})^{\text{num-players}}$.
+In the lever game, the 9 levers of 1 are indistinguishable; hence there is $S_9$ symmetry. In Hanabi, the 5 colors and the positions of cards in the players' hands are symmetric; the corresponding permutation group is $\Phi=S_{\text{num-colors}}\times (S_{\text{hand-size}})^{\text{num-players}}$.
 
 Let $\pi^1, \pi^2$ be the policies of the two players and let $J(\pi^1, \pi^2)$ be the reward of their match. The self-play learning is optimizing the joint policy \[\pi^* = \arg\max_{\pi} J(\pi^1, \pi^2).\]
 
@@ -106,16 +106,16 @@ Other-play modifies the training of self-play, such that for each run, uniformly
 
 Therefore, other-play training is optimizing the target \[\pi^* = \arg\max_{\pi} \mathbb{E}_{\phi\sim \Phi} J(\pi^1, \phi(\pi^2)).\]
 
-Because all $\phi(\pi)$ are not differentiated by the MDP, each of these policies must have the same chance being adopted by the partner. Hence other-play is the best meta-quilibrium learning rule, that is, neither agent can improve the payoff by adopted another learning rule instead.
+Because all $\phi(\pi)$ are not differentiated by the MDP, each of these policies must have the same chance being adopted by the partner. Hence other-play is the best meta-quilibrium learning rule, that is, neither agent can improve the payoff by adopting another learning rule instead.
 
-OP's implementation is like a kind of domain randomization, it aims to make the policy invariant to how the partner breaks the symmetries.
+OP's implementation is like a kind of domain randomization, it aims to make the policy robust to how the partner breaks the symmetries.
 
 \section{Symmetric Networks}
 \subsection{Theoretical Method}
 
 What OP result is essentially a model that doesn't break the symmetry arbitrarily. We can achieve this goal more straightforwardly by designing the networks to be symmetric according to this permutation group.
 
-Formally speaking, we restrict our policy to statify \[\phi(\pi)=\pi~\forall\phi\in\Phi.\] Because in OP's learning target, every policy behaves like the uniform mixture of its permutations, this restriction doesn't harm the effectiveness.
+Formally speaking, we restrict our policy to statify \[\phi(\pi)=\pi,~\forall\phi\in\Phi.\] Because in OP's learning target, every policy behaves like the uniform mixture of its permutations, this restriction doesn't harm the effectiveness.
 
 In order to satisfy this constraint, we make our neural networks symmetric. In other words, the permutation group $\Phi$ of MDP can also act on neurons and connections in the networks.
 
@@ -134,7 +134,7 @@ For the common symmetry group $S_n$ (like $S_9$ in the lever game), let $T_n^k$ 
 
 Neurons in $T_n^k$ equivalence class stands for the features that distinguish some $k$ labels out of the $n$ symmetric labels in the game. For example, ``the probability of my first card being red`` can be represented by a neuron in $T_5^1\times T_4^1$ class, ``the advantage of discarding a rank-4 green card over a rank-2 yellow card'' represented in $T_5^2$, and ``the expected number of information tokens in the next step'' represented in $T_5^0\times T_4^0=\{1\}$ (a singleton neuron).
 
-In each layer, place some instances of these various sizes of classes together. For example, SAD has 512 LSTM cells in a hidden layer, we can have about 256 $T_5^0$ classes of cells, 32 $T_5^1$ classes and 8 $T_5^2$ classes to get the similar performance. When $n$ is not small, large $k$ may make the size of equivalence class very large, but that is not needed. Most considered features are in small $k$.
+In each layer, place some instances of these classes of various sizes together. For example, SAD has 512 LSTM cells in a hidden layer, we can have about 256 $T_5^0$ classes of cells, 32 $T_5^1$ classes and 8 $T_5^2$ classes to get the similar performance. When $n$ is not small, large $k$ may make the size of equivalence class very large, but that is not needed. Most considered features are in small $k$.
 
 Then let's consider the weight of the connection from a neuron $h_{i,\tau}$ to a neuron $h_{j,\sigma}$ in the next layer, where $\tau = (t_1,t_2,\dots,t_k) \in T_n^k,~\sigma = (s_1,s_2,\dots,s_m) \in T_n^m$.
 
@@ -158,11 +158,6 @@ By designing the translation-invariant structure of the network and reuse parame
 
 \section{Experiments}
 
-\subsection{Lever game}
-(Optional)
-
-\subsection{Hanabi}
-
 First we trained an OP agent according to \cite{hu2020other} to reproduce their results. Following is our training result.
 
 \begin{figure}[H]
@@ -171,7 +166,7 @@ First we trained an OP agent according to \cite{hu2020other} to reproduce their 
 \label{FigTrain}
 \end{figure}
 
-\cite{hu2020other}'s agents reached more than 24 scores in self-play. Due to our limited access to computation resources, our agent is still far from convergance, even though we spent 3 whole days of training. However to see a significant result, we have to train multiple agents using different seeds. That requires a lot of time, and money to rent GPUs.
+\cite{hu2020other}'s agents reached more than 24 scores in self-play. Due to our limited access to computation resources, our agent is still far from convergance, even though we spent 3 whole days of training. However, to see a significant result, we have to train multiple agents using different seeds. That requires a lot of time, and money to rent GPUs.
 
 Our code is available at \url{https://github.com/Aeterrno-Amora/hanabi_SAD} and \url{https://github.com/Aeterrno-Amora/hanabi-learning-environment}. See \href{https://github.com/Aeterrno-Amora/hanabi_SAD/blob/symnet-dev/pyhanabi/r2d2.py}{r2d2.py} and \href{https://github.com/Aeterrno-Amora/hanabi_SAD/blob/symnet-dev/pyhanabi/sym_utils.py}{sym\_utils.py} in the \verb|hanabi_SAD| repository for the implementation of our symmetric networks. We implemented symmetric linear layers and symmetric LSTM layers according to symmetry groups as described in the \textsl{Implementation} section, and combined them into a SAD model.
 
