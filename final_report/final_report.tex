@@ -10,7 +10,7 @@
 \usepackage{algpseudocode}
 \usepackage{setspace}
 \usepackage[rgb]{xcolor}
-\usepackage[numbers]{natbib}
+\usepackage{natbib}
 \usepackage[a4paper,margin=2cm]{geometry}
 \usepackage[colorlinks=true, urlcolor=blue, linkcolor=blue, citecolor=blue]{hyperref}
 
@@ -29,7 +29,7 @@
 \section{Introduction}
 The Hanabi game is a benchmark challenge in fully cooperative games of imperfect information. It's very different from adversarial two-player zero-sum games which have been studied more. But non-zero-sum scenarios are more important in real life.
 
-In this game of limited communication, players convey information by choosing actions from a few options. Therefore to understand others' messages, the player must reason about beliefs and intentions of other players. Such theory of mind reasoning is crucial in more general collaborative efforts, especially those with human partners.\cite{bard2020the}
+In this game of limited communication, players convey information by choosing actions from a few options. Therefore to understand others' messages, the player must reason about beliefs and intentions of other players. Such theory of mind reasoning is crucial in more general collaborative efforts, especially those with human partners. \citep{bard2020the}
 
 \section{Rules of the Hanabi Game}
 
@@ -45,19 +45,27 @@ Players take turns to play. In one's turn, he must take exactly one of the follo
 
 \begin{figure}[H]
 \centerline{\includegraphics[width=6in]{fig1.png}}
-\caption{An example of a four player Hanabi game from the point of view of player 0 (cite from \cite{bard2020the}).}
+\caption{An example of a four player Hanabi game from the point of view of player 0 (cited from \cite{bard2020the}).}
 \label{Fig1}
 \end{figure}
 
 \section{Previous Methods on Hanabi}
 
-The Hanabi game was proved \textsf{NP}-hard even if all hidden information is revealed.\cite{baffier2017hanabi} The hand-coded mathematical ``hat guessing game'' strategy\cite{cox2015how} held state-of-the-art results from March 2016 until December 2019. In five-player games, it almost achieved the best performance resulted by a cheating strategy where each player sees his own cards and uses the information strategy. However, it performed badly in the two-player setting\cite{bouzy2017playing}; and it is not generalizable to similar games. A Monte-Carlo tree search algorithm is given by \cite{walton-rivers2017evaluating}; but the performance is still not very good.
+The Hanabi game was proved \textsf{NP}-hard even if all hidden information is revealed. \citep{baffier2017hanabi} The hand-coded mathematical ``hat guessing game'' strategy \citep{cox2015how} held state-of-the-art results from March 2016 until December 2019. In five-player games, it almost achieved the best performance resulted by a cheating strategy where each player sees his own cards and uses the information strategy. However, it performed badly in the two-player setting \citep{bouzy2017playing}; and it is not generalizable to similar games. A Monte-Carlo tree search algorithm is given by \cite{walton-rivers2017evaluating}; but the performance is still not very good.
 
-Foerster and Song proposed a method of Bayesian action decoder (BAD)\cite{foerster2018bayesian}. The key idea is a joint public belief over players' private features to resolve recursive belief over beliefs, and sampling a deterministic partial policy to resolve the dilemma between informative actions and stochastic actions for exploration. BAD worked well in the two-player setting. Hu and Foerster continued to optimize BAD to SAD\cite{hu2020simplified} and incorperated search into SPARTA\cite{lerer2020improving} to achieve a new state-of-the-art result.
+\cite{foerster2018bayesian} proposed a method of Bayesian action decoder (BAD). The key idea is a joint public belief over players' private features to resolve recursive belief over beliefs, and sampling a deterministic partial policy to resolve the dilemma between informative actions and stochastic actions for exploration. BAD worked well in the two-player setting. \cite{hu2020simplified} continued to optimize BAD to SAD and incorperated search into SPARTA \citep{lerer2020improving} to achieve a new state-of-the-art result.
 
-Then they come up with the method called ``other-play'' (OP) that work well on the zero-shot coordination scenario of the game. Previous studies on MARL usually focus on the self-play (SP) setting where agents are trained and tested both against with themselves, but agents naively trained by SP could do arbitrarily bad when paired with a partner they’re not trained with. OP trains the agent with a copy of itself that is randomly permuted according to the symmetries in the game; hence it reduces the tendency towards arbitrary symmetry breaking. Agents trained with OP perform well when tested by cross-play, and also cooperate well with human.
+Then they come up with the method called ``other-play'' (OP) \citep{hu2020other} that work well on the zero-shot coordination scenario of the game. Previous studies on MARL usually focus on the self-play (SP) setting where agents are trained and tested both against with themselves, but agents naively trained by SP could do arbitrarily bad when paired with a partner they’re not trained with. OP trains the agent with a copy of itself that is randomly permuted according to the symmetries in the game; hence it reduces the tendency towards arbitrary symmetry breaking. Agents trained with OP perform well when tested by cross-play, and also cooperate well with human.
 
 Our work aims to be a better substitute for OP. Intuitively, the optimal strategies for symmetric games should be the same. As an analog, the convolutional neural network uses a symmetric network for training. We apply this idea to the network and reduce the network size by the symmetry group size.
+
+The diagram below shows the relations of the previous methods.
+
+\begin{figure}[H]
+\centerline{\includegraphics[width=3in]{fig3.png}}
+\caption{A diagram of relations of previous methods.}
+\label{Fig3}
+\end{figure}
 
 \section{Zero-Shot Coordination}
 
@@ -65,7 +73,7 @@ Zero-shot coordination is the scenario where players are paired with strangers t
 
 \begin{figure}[H]
 \centerline{\includegraphics[width=4in]{fig2.png}}
-\caption{An example of a lever coordination game (cite from \cite{hu2020other}).}
+\caption{An example of a lever coordination game (cited from \cite{hu2020other}).}
 \label{Fig2}
 \end{figure}
 
@@ -78,7 +86,7 @@ Similarly in Hanabi, the 5 colors are symmetric and thus indistinguishable. Self
 \renewcommand\O{{\mathcal O}}
 \newcommand\A{{\mathcal A}}
 
-Arbitrary symmetries breaking is harmful in zero-shot coordination. Foerster et al.' proposed a method called \textsl{other-play} (OP)\cite{hu2020other} to alleviate this problem.
+Arbitrary symmetries breaking is harmful in zero-shot coordination. \cite{hu2020other} proposed a method called \textsl{other-play} (OP) to alleviate this problem.
 
 The symmetries in the MDP can be described as a isomorphism over states $\S$, observations $\A$ and actions $\O$ that keeps the transition function $P$, the reward $R$ and the observation function $O$ invariant.
 \begin{align*}
@@ -105,11 +113,11 @@ OP's implementation is like a kind of domain randomization, it aims to make the 
 \section{Symmetric Networks}
 \subsection{Theoretical Method}
 
-What OP does is essentially a model that doesn't break this symmetry. We can achieve this goal more straightforwardly by designing the networks to be symmetric according to this permutation group.
+What OP result is essentially a model that doesn't break the symmetry arbitrarily. We can achieve this goal more straightforwardly by designing the networks to be symmetric according to this permutation group.
 
 Formally speaking, we restrict our policy to statify \[\phi(\pi)=\pi~\forall\phi\in\Phi.\] Because in OP's learning target, every policy behaves like the uniform mixture of its permutations, this restriction doesn't harm the effectiveness.
 
-In order to satisfy this constraint, we make our neural networks symmetric. In other words, the permutation group of MDP can also act on neurons and connections in the networks.
+In order to satisfy this constraint, we make our neural networks symmetric. In other words, the permutation group $\Phi$ of MDP can also act on neurons and connections in the networks.
 
 \begin{itemize}
   \item For every neuron $h$ in the network, there should also be neurons $\phi(h)$ for all $\phi\in S_5$.
@@ -136,18 +144,47 @@ Let $\mask(\tau,\sigma)$ be a $k$-length sequence whose $i$-th position is
   j,&\text{if }t_i=s_j \\
   0,&\text{if }t_i\text{ doesn't appear in }\sigma
 \end{cases}.\]
-Then there should be weights $w_{\mathrm{range}(\mask)}$, and
-\[h_{j,\sigma} = f\Bigl(\sum_{i\in\text{prev layer}}\sum_{\tau\in T_i}w_{\mask(\tau,\sigma)}h_{i,\tau}~+~b_j\Bigr)\]
+Then there should be weights $w_{\mask(\tau,\sigma)}$, and
+\[h_{j,\sigma} = f\Bigl(\sum_{i\in\text{prev-layer}}\sum_{\tau\in T_i}w_{\mask(\tau,\sigma)}h_{i,\tau}~+~b_j\Bigr)\]
+where $f$ is the non-linearity.
 
-Recall the convolutional neural networks, which uses symmetries to reduce the number of network parameters. The symmetries in the convolutional layer are translations. As an analog, since there are also symmetries in the Hanabi game, we can use a symmetric network to reduce the number of parameters. Precisely, let $\Phi = S_5$ be the symmetric group in the Hanabi game, and our network should satisfy:
+Note that this way of constructing a network is compatible with various forms of neurons including LSTM cells.
 
-This way of constructing a network apply to various types of neurons including LSTM cells.
+\subsection{Related Works}
 
-The symmetric network reduces the number of parameter by a factor about $|\Phi|$. In this specific problem, the Hanabi game, the network size becomes about $1 / 120$ from any original training method.
+Convolutional neural networks appears to be similar to our work in the nature of making the structure of the network resemble the symmetry. The convolution reflects the transition invariance of the input. What we proprose is a more general method of studying the underlying symmetries in the problem and designing a network according to it.
 
-\section{Empirical Results}
+By designing the translation-invariant structure of the network and reuse parameters, CNN dramastically reduces the number of parameters, and is hence easy to train, and converges both faster and to more reasonable results. Our method also reduces the number of parameters, hence will converge faster and to a certainly symmetry-invariant policy.
+
+\section{Experiments}
+
+\subsection{Lever game}
+(Optional)
+
+\subsection{Hanabi}
+
+First we trained an OP agent according to \cite{hu2020other} to reproduce their results. Following is our training result.
+
+\begin{figure}[H]
+\centerline{\includegraphics[width=3in]{train.png}}
+\caption{The self-play score during training an OP agent.}
+\label{FigTrain}
+\end{figure}
+
+\cite{hu2020other}'s agents reached more than 24 scores in self-play. Due to our limited access to computation resources, our agent is still far from convergance, even though we spent 3 whole days of training. However to see a significant result, we have to train multiple agents using different seeds. That requires a lot of time, and money to rent GPUs.
+
+Our code is available at \url{https://github.com/Aeterrno-Amora/hanabi_SAD} and \url{https://github.com/Aeterrno-Amora/hanabi-learning-environment}. See \href{https://github.com/Aeterrno-Amora/hanabi_SAD/blob/symnet-dev/pyhanabi/r2d2.py}{r2d2.py} and \href{https://github.com/Aeterrno-Amora/hanabi_SAD/blob/symnet-dev/pyhanabi/sym_utils.py}{sym\_utils.py} in the \verb|hanabi_SAD| repository for the implementation of our symmetric networks. We implemented symmetric linear layers and symmetric LSTM layers according to symmetry groups as described in the \textsl{Implementation} section, and combined them into a SAD model.
+
+But there was lot of codes to modify to make our model run with the given framework. The input of observations, the output of q-values and several other intermediate data have to be rearranged in a color-major order, so that the color symmetries in them can be correctly recognized by the model. To do this we have to read 50KB of code and rewrite them to nearly double amount. There is still some more to do to study how to optimize our code with pytorch JIT scripts, or it won't run with the given batch runner.
+
+We have already eliminated a lot of bugs. But now we're suffering from a bug of accidentally accessing memory beyond allocated range. It's supposed to be an out-of-range vector operation. But it's very hard to figer out where it happens.
 
 \section{Conclusion}
+The Hanabi game is quite a challenge. Inspired from convolutional neural networks, we have come up with the symmetric networks. We remark that this method can be applied to most of the cases where OP is applicable. It is also fundamentally compatible with any type of optimization method. The idea of designing a network according to symmetries can even be apply to wider topics to produce interesting models for various problem with symmetry.
+
+Unfortunately, due to the hardness of debugging and the limitations of computation resources, we are unable to finish the experiments. We believe our approach will work well. We are sorry about the incompleteness of our work.
+
+There are still some further directions to research on. Both OP and our approach require the symmetric group to be given. To generalize to an arbitrary game in which symmetries are hard to tell by a human, we can consider how to combine our method or OP with MDP homomorphism methods which can ``learn'' the underlying symmetries in MDP.
 
 \normalem
 \bibliographystyle{apacite}
